@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
 import escapeRegExp from "escape-string-regexp";
+import { Link } from "react-router-dom";
 
 
 class ListContacts extends Component {
@@ -10,9 +11,13 @@ class ListContacts extends Component {
         onDeleteContact: PropTypes.func.isRequired
     };
 
-    state = {
-        query: ''
-    };
+    constructor(){
+        super();
+
+        this.state = {
+            query: ''
+        };
+    }
 
     updateQuery = (query) => {
         this.setState({
@@ -20,31 +25,55 @@ class ListContacts extends Component {
         })
     };
 
+    clearQuery = () => {
+        this.setState({
+           query: ''
+        });
+    }
+
+    filterContacts = (query) => {
+        const {contacts} = this.props;
+        if (query) {
+            const match = new RegExp(escapeRegExp(query), 'i');
+            return contacts.filter((contact) => (match.test(contact.name)));
+        } else {
+            return contacts;
+        }
+    };
+
     render() {
 
-        let contactsToShow;
+        const {onDeleteContact, contacts} = this.props;
+        const {query} = this.state;
 
-        if (this.state.query) {
-            const match = new RegExp(escapeRegExp(this.state.query), 'i');
-            contactsToShow = this.props.contacts.filter((contact) => (match.test(contact.name)));
-        } else {
-            contactsToShow = this.props.contacts;
-        }
+        let contactsToShow = this.filterContacts(query);
 
         return (
 
             <div className="list-contacts">
-                <div className="list-contacts">
+                <div className="list-contacts-top">
                     <input
                         className="search-contacts"
                         type="text"
                         placeholder="Search Contacts"
-                        value={this.state.query}
+                        value={query}
                         onChange={(event) => {
                             this.updateQuery(event.target.value)
                         }}
                     />
+                    <Link
+                        to="/create"
+                        className="add-contact"
+                    >Add Contact</Link>
                 </div>
+
+                {contactsToShow.length !== contacts.length &&
+                    <div className="showing-contacts">
+                        <span>Now showing {contactsToShow.length} of {contacts.length} contacts.</span>
+                        <button onClick={this.clearQuery}>Show all</button>
+                    </div>
+                }
+
                 <ol className='contact-list'>
                     {contactsToShow.map((contact) => (
                         <li key={contact.id} className='contact-list-item'>
@@ -55,7 +84,7 @@ class ListContacts extends Component {
                                 <p>{contact.name}</p>
                                 <p>{contact.email}</p>
                             </div>
-                            <button onClick={() => this.props.onDeleteContact(contact)}
+                            <button onClick={() => onDeleteContact(contact)}
                                     className="contact-remove">Remove
                             </button>
                         </li>
