@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 class ShelfChanger extends Component{
 
     static propTypes = {
-        currentShelf : PropTypes.string.isRequired,
+        currentShelf : PropTypes.string,
         handleShelfChange : PropTypes.func.isRequired
     }
 

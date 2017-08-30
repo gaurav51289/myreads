@@ -17,8 +17,8 @@ class Book extends Component {
     }
 
     handleShelfChange = (newShelf) => {
-        const bookid = this.props.details.id;
-        this.props.handleShelfChange(bookid, newShelf);
+        const book = this.props.details;
+        this.props.handleShelfChange(book, newShelf);
     }
 
     render() {

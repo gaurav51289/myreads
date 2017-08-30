@@ -12,7 +12,6 @@ class App extends Component {
     }
 
     componentDidMount(){
-
         BookAPI.getAll().then((books) => {
             this.setState({
                 books: books
@@ -21,37 +20,53 @@ class App extends Component {
 
     }
 
-    changeShelf = (bookid, newShelf) => {
+    changeShelf = (bookSelected, newShelf) => {
 
-        var books = this.state.books;
+        const books = this.state.books;
+
+        let bookOnShelf = false;
 
         books.forEach((book) => {
-           if(book.id === bookid){
+           if(book.id === bookSelected.id){
                book.shelf = newShelf;
+               bookOnShelf = true;
            }
         });
+
+        if(!bookOnShelf){
+            bookSelected.shelf = newShelf;
+            books.push(bookSelected);
+        }
 
         this.setState({
             books: books
         });
 
+        BookAPI.update(bookSelected, newShelf);
     }
 
     render() {
         return (
             <div>
                 <Route exact path="/"
-                       render={() => (
-                           <ListBooks
-                               books={this.state.books}
-                               handleShelfChange={this.changeShelf}
-                           />
-                       )}
+                       render={() => {
+                           return(
+                               <ListBooks
+                                   books={this.state.books}
+                                   handleShelfChange={this.changeShelf}
+                                />
+                           )
+
+                       }}
                 />
                 <Route path="/search"
-                       render={() => (
-                           <SearchBooks/>
-                       )}
+                       render={({history}) => {
+                           return (
+                               <SearchBooks
+                                   handleBookAddition={this.changeShelf}
+                               />
+                           )
+                       }}
                 />
             </div>
 

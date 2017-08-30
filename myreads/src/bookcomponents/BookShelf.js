@@ -19,7 +19,6 @@ class BookShelf extends Component{
                 </div>
                 <div className="bookshelf-books">
                     <ol className="books-grid">
-
                         {
                             books.map((bookDetails) => (
                                 <li key={bookDetails.id}>
