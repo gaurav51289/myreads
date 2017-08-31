@@ -9,52 +9,71 @@ class SearchBooks extends Component {
     static MAX_RESULTS = 15;
 
     static propTypes = {
-        handleBookAddition : PropTypes.func.isRequired
-    }
+        handleBookAddition: PropTypes.func.isRequired,
+        booksOnShelf: PropTypes.array
+    };
 
     state = {
-        books : [],
-        query : ""
-    }
+        searchedBooks: [],
+        query: ""
+    };
 
     handleQueryChange = (query) => {
         this.setState((state) => {
             state.query = query.trim();
-        })
+        });
 
         BookAPI.search(query, SearchBooks.MAX_RESULTS).then((books) => {
-            this.setState((state) => {
 
-                if(!books){
+            const {booksOnShelf} = this.props;
+
+            this.setState((state) => {
+                if (!books) {
                     books = [];
-                } else if(books.hasOwnProperty("error")){
+                } else if (books.hasOwnProperty("error")) { //handles the error response from the api
                     books = [];
                 }
-                state.books = books;
-                console.log(books);
+
+                state.searchedBooks = books.map((book) => {
+
+                    let found = false;
+
+                    let shelfIndex = booksOnShelf.findIndex((bookOnShelf) => {
+                                        if (bookOnShelf.id === book.id) {
+                                            found = true;
+                                            return bookOnShelf;
+                                        }
+                                        return -1;
+                                    });
+
+                    if(found){
+                        return booksOnShelf[shelfIndex];
+                    } else {
+                        return book;
+                    }
+                });
             });
         });
-    }
+    };
 
     addToShelf = (bookSelected, shelf) => {
-        var {books} = this.state;
-        books.forEach((book) => {
-            if(book.id === bookSelected.id){
+        let {searchedBooks} = this.state;
+        searchedBooks.forEach((book) => {
+            if (book.id === bookSelected.id) {
                 book.shelf = shelf;
             }
         });
         this.setState((state) => {
-            state.books = books;
+            state.searchedBooks = searchedBooks;
         });
-        BookAPI.update( bookSelected, shelf);
+        BookAPI.update(bookSelected, shelf);
         this.props.handleBookAddition(bookSelected, shelf);
     }
 
 
-
     render() {
 
-        const {books, query} = this.state;
+        const {searchedBooks, query} = this.state;
 
         return (
             <div className="search-books">
@@ -62,7 +81,7 @@ class SearchBooks extends Component {
                     <Link
                         className="close-search"
                         to="/"
-                        >Close</Link>
+                    >Close</Link>
                     <div className="search-books-input-wrapper">
                         <input
                             type="text"
@@ -77,7 +96,7 @@ class SearchBooks extends Component {
                 <div className="search-books-results">
                     <ol className="books-grid">
                         {
-                            books.map((bookDetails) => (
+                            searchedBooks.map((bookDetails) => (
                                 <li key={bookDetails.id}>
                                     <Book
                                         details={bookDetails}

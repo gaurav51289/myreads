@@ -64,6 +64,7 @@ class App extends Component {
                            return (
                                <SearchBooks
                                    handleBookAddition={this.changeShelf}
+                                   booksOnShelf={this.state.books}
                                />
                            )
                        }}
