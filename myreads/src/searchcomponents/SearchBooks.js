@@ -38,16 +38,16 @@ class SearchBooks extends Component {
 
                     let found = false;
 
-                    let shelfIndex = booksOnShelf.findIndex((bookOnShelf) => {
+                    let shelfBook = booksOnShelf.find((bookOnShelf) => {
                                         if (bookOnShelf.id === book.id) {
                                             found = true;
                                             return bookOnShelf;
                                         }
-                                        return -1;
+                                        return null;
                                     });
 
                     if(found){
-                        return booksOnShelf[shelfIndex];
+                        return shelfBook;
                     } else {
                         return book;
                     }
