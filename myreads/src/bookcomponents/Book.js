@@ -27,8 +27,6 @@ class Book extends Component {
             <div className="book">
                 <div className="book-top">
                     <div className="book-cover" style={{
-                        width: 128,
-                        height: 193,
                         backgroundImage: `url(${details.imageLinks.thumbnail})`
                     }}/>
                     <ShelfChanger
@@ -38,7 +36,7 @@ class Book extends Component {
                 </div>
                 <div className="book-title">{details.title}</div>
                 <div className="book-authors">
-                    {details.authors && details.authors}
+                    {details.authors ? details.authors.join(', ') : ''}
                 </div>
             </div>
         )
